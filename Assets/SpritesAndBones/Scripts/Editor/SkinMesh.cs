@@ -36,11 +36,11 @@ using FarseerPhysics.Common;
 
 [ExecuteInEditMode]
 public class SkinMesh : EditorWindow {
-    private SpriteRenderer spriteRenderer;
+	private SpriteRenderer spriteRenderer;
 
-    private Vector2[] polygon = new Vector2[0];
-    private float simplify = 1.0f;
-    private int divisions = 2;
+	private Vector2[] polygon = new Vector2[0];
+	private float simplify = 1.0f;
+	private int divisions = 2;
 
 	public float handleScale = 0.3f;
 	public Color handleColor = Color.white;
@@ -55,57 +55,57 @@ public class SkinMesh : EditorWindow {
 
 	private bool meshCreated = false;
 
-    [MenuItem("Sprites And Bones/Create Mesh")]
+	[MenuItem("Sprites And Bones/Create Mesh")]
     protected static void ShowSkinMeshEditor() {
-        var wnd = GetWindow<SkinMesh>();
-        wnd.titleContent.text = "Create Mesh";
-        wnd.Show();
+		var wnd = GetWindow<SkinMesh>();
+		wnd.titleContent.text = "Create Mesh";
+		wnd.Show();
 
 		SceneView.onSceneGUIDelegate += wnd.OnSceneGUI;
-    }
+	}
 
     public void OnDestroy() {
-        SceneView.onSceneGUIDelegate -= OnSceneGUI;
+		SceneView.onSceneGUIDelegate -= OnSceneGUI;
 		meshCreated = false;
-    }
+	}
 
     public void OnGUI() {
-        GUILayout.Label("Sprite", EditorStyles.boldLabel);
+		GUILayout.Label("Sprite", EditorStyles.boldLabel);
 
-        EditorGUI.BeginChangeCheck();
-        spriteRenderer = (SpriteRenderer)EditorGUILayout.ObjectField(spriteRenderer, typeof(SpriteRenderer), true);
+		EditorGUI.BeginChangeCheck();
+		spriteRenderer = (SpriteRenderer)EditorGUILayout.ObjectField(spriteRenderer, typeof(SpriteRenderer), true);
         if (Selection.activeGameObject != null) {
 			GameObject o = Selection.activeGameObject;
 			spriteRenderer = o.GetComponent<SpriteRenderer>();
 		}
 		if (EditorGUI.EndChangeCheck()) {
-            polygon = new Vector2[0]; 
-        }
+			polygon = new Vector2[0];
+		}
 
         if (spriteRenderer != null) {
-            EditorGUILayout.Separator();
+			EditorGUILayout.Separator();
 
-            GUILayout.Label("Simplify", EditorStyles.boldLabel);
+			GUILayout.Label("Simplify", EditorStyles.boldLabel);
 
-            simplify = EditorGUILayout.FloatField("Vertex Dist.", simplify);
+			simplify = EditorGUILayout.FloatField("Vertex Dist.", simplify);
 
             if (GUILayout.Button("Generate Polygon")) {
-                Rect r = spriteRenderer.sprite.rect;
-                Texture2D tex = spriteRenderer.sprite.texture;
-                IBitmap bmp = ArrayBitmap.CreateFromTexture(tex, new Rect(r.x, r.y, r.width, r.height));
-                polygon = BitmapHelper.CreateFromBitmap(bmp);
-                polygon = SimplifyTools.DouglasPeuckerSimplify(new Vertices(polygon), simplify).ToArray();
+				Rect r = spriteRenderer.sprite.rect;
+				Texture2D tex = spriteRenderer.sprite.texture;
+				IBitmap bmp = ArrayBitmap.CreateFromTexture(tex, new Rect(r.x, r.y, r.width, r.height));
+				polygon = BitmapHelper.CreateFromBitmap(bmp);
+				polygon = SimplifyTools.DouglasPeuckerSimplify(new Vertices(polygon), simplify).ToArray();
 				EditorUtility.SetDirty(this);
-            }
+			}
 
-            GUILayout.Label("Vertices: " + polygon.Length);
+			GUILayout.Label("Vertices: " + polygon.Length);
 
-            EditorGUILayout.Separator();
+			EditorGUILayout.Separator();
 
             if (polygon.Length > 0 && GUILayout.Button("Create Mesh")) {
-                CreateMesh();
+				CreateMesh();
 				EditorUtility.SetDirty(this);
-            }
+			}
 
 			if (GUILayout.Button("Create Mesh from Sprite")) {
 				SpriteMesh spriteMesh = new SpriteMesh();
@@ -131,14 +131,14 @@ public class SkinMesh : EditorWindow {
 
 			EditorGUILayout.Separator();
 
-            GUILayout.Label("Create and Edit a Custom Polygon", EditorStyles.boldLabel);
+			GUILayout.Label("Create and Edit a Custom Polygon", EditorStyles.boldLabel);
 			handleScale = EditorGUILayout.FloatField("Handle Size", handleScale);
 			handleColor = EditorGUILayout.ColorField("Handle Color", handleColor);
 			polyColor = EditorGUILayout.ColorField("Poly Color", polyColor);
 
 			EditorGUILayout.Separator();
 
-            GUILayout.Label("Ctrl + Click to Add Point, Shift + Click to Add Mid Point, Alt + Click to Remove Points", EditorStyles.whiteLabel);
+			GUILayout.Label("Ctrl + Click to Add Point, Shift + Click to Add Mid Point, Alt + Click to Remove Points", EditorStyles.whiteLabel);
 
 			EditorGUILayout.Separator();
 
@@ -147,7 +147,7 @@ public class SkinMesh : EditorWindow {
 				EditorUtility.SetDirty(this);
 			}
 
-			EditorUtility.SetSelectedWireframeHidden(spriteRenderer, true);
+			EditorUtility.SetSelectedRenderState(spriteRenderer, EditorSelectedRenderState.Hidden);
 
 			if (GUILayout.Button("Update Custom Mesh")) {
 				if (spriteRenderer != null) UpdateMesh();
@@ -163,11 +163,11 @@ public class SkinMesh : EditorWindow {
 				EditorUtility.SetDirty(this);
 			}
 
-            GUILayout.Label("Subdivide Mesh", EditorStyles.boldLabel);
+			GUILayout.Label("Subdivide Mesh", EditorStyles.boldLabel);
 
 			string[] subdivide = { "0", "1", "2", "3" };
 
-            divisions = EditorGUILayout.Popup("Subdivisions", divisions, subdivide);
+			divisions = EditorGUILayout.Popup("Subdivisions", divisions, subdivide);
 
 			if (GUILayout.Button("Subdivide Mesh")) {
 				if (spriteRenderer != null && mesh != null) SubdivideMesh(divisions);
@@ -175,7 +175,7 @@ public class SkinMesh : EditorWindow {
 
 			EditorGUILayout.Separator();
 
-            GUILayout.Label("Load Custom Mesh to Edit", EditorStyles.boldLabel);
+			GUILayout.Label("Load Custom Mesh to Edit", EditorStyles.boldLabel);
 
 			GUILayout.Label("Adding or Deleting points Re-Triangulates Mesh", EditorStyles.whiteLabel);
 
@@ -184,13 +184,13 @@ public class SkinMesh : EditorWindow {
 
 			if (GUILayout.Button("Load Custom Mesh")) {
 				if (spriteRenderer != null && customLoadMesh != null) {
-                    LoadMesh(customLoadMesh);
+					LoadMesh(customLoadMesh);
 				}
 			}
 
 			EditorGUILayout.Separator();
 
-            GUILayout.Label("Combine Meshes", EditorStyles.boldLabel);
+			GUILayout.Label("Combine Meshes", EditorStyles.boldLabel);
 
 			GUILayout.Label("Avoid Combining Complex Meshes, results will vary", EditorStyles.whiteLabel);
 
@@ -200,27 +200,27 @@ public class SkinMesh : EditorWindow {
 			if (GUILayout.Button("Combine Meshes")) {
 				if (spriteRenderer != null) CombineMesh();
 			}
-        }
-    }
+		}
+	}
 
     private void LoadMesh(Mesh loadMesh) {
-        if(mesh != null) mesh.Clear();
-        mesh = new Mesh();
-        mesh.vertices = loadMesh.vertices;
-        mesh.triangles = loadMesh.triangles;
-        mesh.uv = genUV(mesh.vertices);
-        mesh.normals = loadMesh.normals;
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
+		if (mesh != null) mesh.Clear();
+		mesh = new Mesh();
+		mesh.vertices = loadMesh.vertices;
+		mesh.triangles = loadMesh.triangles;
+		mesh.uv = genUV(mesh.vertices);
+		mesh.normals = loadMesh.normals;
+		mesh.RecalculateNormals();
+		mesh.RecalculateBounds();
 
-        meshCreated = true;
+		meshCreated = true;
 
-        points = new Vector2[mesh.vertices.Length];
+		points = new Vector2[mesh.vertices.Length];
         for(int i=0; i < mesh.vertices.Length; i++) {
-            points[i] = new Vector2(mesh.vertices[i].x, mesh.vertices[i].y);
-        }
-        EditorUtility.SetDirty(this);
-    }
+			points[i] = new Vector2(mesh.vertices[i].x, mesh.vertices[i].y);
+		}
+		EditorUtility.SetDirty(this);
+	}
 
 	private void CreatePolygon() {
 		GameObject go = Selection.activeGameObject;
@@ -239,56 +239,56 @@ public class SkinMesh : EditorWindow {
 	}
 
     private void CreateMesh() {
-        Sprite sprite = spriteRenderer.sprite;
+		Sprite sprite = spriteRenderer.sprite;
 
-        Rect bounds = GetBounds(polygon);
+		Rect bounds = GetBounds(polygon);
 
-        TriangleNet.Mesh tnMesh = new TriangleNet.Mesh();
-        TriangleNet.Geometry.InputGeometry input = new TriangleNet.Geometry.InputGeometry();
+		TriangleNet.Mesh tnMesh = new TriangleNet.Mesh();
+		TriangleNet.Geometry.InputGeometry input = new TriangleNet.Geometry.InputGeometry();
 
-        input.AddPolygon(polygon);
+		input.AddPolygon(polygon);
 
-        tnMesh.Triangulate(input);
+		tnMesh.Triangulate(input);
 
-        Mesh mesh = new Mesh();
-        mesh.vertices = tnMesh.Vertices.Select(p => new Vector3((float)p.X, (float)p.Y, 0)).ToArray();
+		Mesh mesh = new Mesh();
+		mesh.vertices = tnMesh.Vertices.Select(p => new Vector3((float)p.X, (float)p.Y, 0)).ToArray();
 
-        // Not sure about winding
-        // If there is an interesting error, It is probably because of cw/ccw windings
-        int[] tris = tnMesh.Triangles.ToUnityMeshTriangleIndices();
-        mesh.triangles = tris;
+		// Not sure about winding
+		// If there is an interesting error, It is probably because of cw/ccw windings
+		int[] tris = tnMesh.Triangles.ToUnityMeshTriangleIndices();
+		mesh.triangles = tris;
 
-        List<Vector2> uv = new List<Vector2>();
+		List<Vector2> uv = new List<Vector2>();
 
-        Vector3 lower = new Vector3(bounds.x, bounds.y);
-        Vector3 size = new Vector3(bounds.xMax, bounds.yMax) - lower;
+		Vector3 lower = new Vector3(bounds.x, bounds.y);
+		Vector3 size = new Vector3(bounds.xMax, bounds.yMax) - lower;
 
-        Rect uv_bounds = new Rect(sprite.rect.x / sprite.texture.width, sprite.rect.y / sprite.texture.height, sprite.rect.width / sprite.texture.width, sprite.rect.height / sprite.texture.height);
+		Rect uv_bounds = new Rect(sprite.rect.x / sprite.texture.width, sprite.rect.y / sprite.texture.height, sprite.rect.width / sprite.texture.width, sprite.rect.height / sprite.texture.height);
 
-        float scalex = sprite.bounds.size.x / bounds.width;
-        float scaley = sprite.bounds.size.y / bounds.height;
+		float scalex = sprite.bounds.size.x / bounds.width;
+		float scaley = sprite.bounds.size.y / bounds.height;
 
-        Vector3[] scaled = mesh.vertices;
+		Vector3[] scaled = mesh.vertices;
 
         for (int i = 0; i < mesh.vertices.Length; i++) {
-            Vector3 v = scaled[i];
-            Vector3 rel = v - lower;
-            uv.Add(new Vector2(rel.x / size.x * uv_bounds.width, rel.y / size.y * uv_bounds.height) + new Vector2(uv_bounds.x, uv_bounds.y));
+			Vector3 v = scaled[i];
+			Vector3 rel = v - lower;
+			uv.Add(new Vector2(rel.x / size.x * uv_bounds.width, rel.y / size.y * uv_bounds.height) + new Vector2(uv_bounds.x, uv_bounds.y));
 
-            scaled[i] = new Vector3(v.x * scalex, v.y * scaley, v.z) - ((Vector3)bounds.center * scalex) + sprite.bounds.center;
-        }
+			scaled[i] = new Vector3(v.x * scalex, v.y * scaley, v.z) - ((Vector3)bounds.center * scalex) + sprite.bounds.center;
+		}
 
-        mesh.MarkDynamic();
+		mesh.MarkDynamic();
 		mesh.vertices = scaled;
-        mesh.uv = uv.ToArray();
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
+		mesh.uv = uv.ToArray();
+		mesh.RecalculateNormals();
+		mesh.RecalculateBounds();
 
-        //GameObject go = new GameObject();
-        //MeshFilter mf = go.AddComponent<MeshFilter>();
-        //mf.sharedMesh = mesh;
-        //MeshRenderer mr = go.AddComponent<MeshRenderer>();
-        //mr.sharedMaterial = spriteRenderer.sharedMaterial;
+		//GameObject go = new GameObject();
+		//MeshFilter mf = go.AddComponent<MeshFilter>();
+		//mf.sharedMesh = mesh;
+		//MeshRenderer mr = go.AddComponent<MeshRenderer>();
+		//mr.sharedMaterial = spriteRenderer.sharedMaterial;
 
 		// Check if the Meshes directory exists, if not, create it.
 		DirectoryInfo meshDir = new DirectoryInfo("Assets/Meshes");
@@ -297,32 +297,32 @@ public class SkinMesh : EditorWindow {
 			Directory.CreateDirectory(meshDir.FullName);
 		}
 		ScriptableObjectUtility.CreateAsset(mesh, "Meshes/" + spriteRenderer.gameObject.name + ".Mesh");
-    }
+	}
 
     private static Rect GetBounds(IEnumerable<Vector2> poly) {
-        float bx1 = poly.Min(p => p.x);
-        float by1 = poly.Min(p => p.y);
-        float bx2 = poly.Max(p => p.x);
-        float by2 = poly.Max(p => p.y);
+		float bx1 = poly.Min(p => p.x);
+		float by1 = poly.Min(p => p.y);
+		float bx2 = poly.Max(p => p.x);
+		float by2 = poly.Max(p => p.y);
 
-        return new Rect(bx1, by1, bx2 - bx1, by2 - by1);
-    }
+		return new Rect(bx1, by1, bx2 - bx1, by2 - by1);
+	}
 
     private static bool PointInPoly(Vector2 p, IList<Vector2> poly) {
-        int i, j = poly.Count() - 1;
-        bool oddNodes = false;
+		int i, j = poly.Count() - 1;
+		bool oddNodes = false;
 
         for (i = 0; i < poly.Count; i++) {
-            if ((poly[i].y < p.y && poly[j].y >= p.y
-            || poly[j].y < p.y && poly[i].y >= p.y)
+			if ((poly[i].y < p.y && poly[j].y >= p.y
+			|| poly[j].y < p.y && poly[i].y >= p.y)
             && (poly[i].x <= p.x || poly[j].x <= p.x)) {
-                oddNodes ^= (poly[i].x + (p.y - poly[i].y) / (poly[j].y - poly[i].y) * (poly[j].x - poly[i].x) < p.x);
-            }
-            j = i;
-        }
+				oddNodes ^= (poly[i].x + (p.y - poly[i].y) / (poly[j].y - poly[i].y) * (poly[j].x - poly[i].x) < p.x);
+			}
+			j = i;
+		}
 
-        return oddNodes;
-    }
+		return oddNodes;
+	}
 
 	public bool IsBadTriangle(DelaunayTriangle triangle) {
 		// Finde die längste Seite
@@ -344,7 +344,8 @@ public class SkinMesh : EditorWindow {
 		if (points.Length == 0) return;
 
 		bool closed = true;
-		if (points.Length < 3) {
+		if (points.Length < 3)
+		{
 			closed = false;
 		}
 
@@ -353,7 +354,7 @@ public class SkinMesh : EditorWindow {
 
 		// Handles.DrawPolyLine(mesh.vertices);
 		if (mesh != null) {
-            int triCount = mesh.triangles.Length / 3;
+			int triCount = mesh.triangles.Length / 3;
 			for (int i = 0; i < triCount; i++) {
 				Vector3 p1 = mesh.vertices[mesh.triangles[i * 3]];
 				Vector3 p2 = mesh.vertices[mesh.triangles[(i * 3) + 1]];
@@ -385,19 +386,13 @@ public class SkinMesh : EditorWindow {
 			if (points.Length > 0) {
 				for (int i = 0; i < points.Length; i++) {
 					Vector3 point = new Vector3(points[i].x, points[i].y, 0);
-					
+
 					Handles.color = handleColor;
 					GUI.SetNextControlName("polygon point " + i);
 					if (i == 0) Handles.color = handleColorFirst;
 					if (i == (points.Length - 1)) Handles.color = handleColorLast;
 					float size = GetHandleSize(point, 1);
-					point = Handles.FreeMoveHandle(
-						point, 
-						Quaternion.identity, 
-						size, 
-						Vector3.zero, 
-						Handles.CircleCap
-					);
+					point = Handles.FreeMoveHandle(point, Quaternion.identity, size, Vector3.zero, Handles.CircleHandleCap);
 
 					points[i] = point;
 				}
@@ -430,7 +425,8 @@ public class SkinMesh : EditorWindow {
 		Vector3 worldPos = r.origin - spriteRenderer.transform.position;
 		List<Vector2> newPoints = new List<Vector2>(points);
 		float size = GetHandleSize(worldPos, 0.5f);
-		if (Handles.Button(worldPos, Quaternion.identity, size, size, Handles.CircleCap)) {
+		if (Handles.Button(worldPos, Quaternion.identity, size, size, Handles.CircleHandleCap))
+		{
 			newPoints.Add(new Vector3(worldPos.x, worldPos.y, 0));
 			Undo.RecordObject(this, "added polygon point");
 			points = newPoints.ToArray();
@@ -444,14 +440,15 @@ public class SkinMesh : EditorWindow {
 		int len = points.Length;
 		if (points.Length > 1) {
 			for (int i = 0; i < len; i++) {
-				int n = (i+1)%len;
+				int n = (i + 1) % len;
 				Vector3 p1 = points[i];
 				Vector3 p2 = points[n];
 				Handles.color = Color.green;
 				GUI.SetNextControlName("remove polygon point " + i);
 				Vector3 mid = (p1 + p2) * 0.5f;
 				float size = GetHandleSize(mid, 0.5f);
-				if (Handles.Button(mid, Quaternion.identity, size, size, Handles.CircleCap)) {
+				if (Handles.Button(mid, Quaternion.identity, size, size, Handles.CircleHandleCap))
+				{
 					newPoints.Insert(n, new Vector3(mid.x, mid.y, mid.z));
 					Undo.RecordObject(this, "added polygon point");
 					points = newPoints.ToArray();
@@ -464,15 +461,15 @@ public class SkinMesh : EditorWindow {
 	}
 
 	void RemovePoint (int index) {
-        if (index < 0 || index >= points.Length) return;
+		if (index < 0 || index >= points.Length) return;
 
-        Undo.RecordObject(this, "removed polygon point");
+		Undo.RecordObject(this, "removed polygon point");
 		List<Vector2> newPoints = new List<Vector2>(points);
-        newPoints.RemoveAt(index);
-        points = newPoints.ToArray();
+		newPoints.RemoveAt(index);
+		points = newPoints.ToArray();
 		if (meshCreated) UpdateMesh();
 		EditorUtility.SetDirty(this);
-    }
+	}
 
     void RemovePoint () {
 		if (points.Length > 1) {
@@ -480,17 +477,18 @@ public class SkinMesh : EditorWindow {
 				Handles.color = Color.red;
 				float size = GetHandleSize(points[i], 1);
 				GUI.SetNextControlName("remove pretty poly point " + i);
-				if (Handles.Button(points[i], Quaternion.identity, size, size, Handles.CircleCap)) {
+				if (Handles.Button(points[i], Quaternion.identity, size, size, Handles.CircleHandleCap))
+				{
 					RemovePoint(i);
 					break;
 				}
 			}
 		}
-    }
+	}
 
     float GetHandleSize (Vector3 pos, float size) {
-    	return Mathf.Min(HandleUtility.GetHandleSize(pos), 0.5f) * size * handleScale;
-    }
+		return Mathf.Min(HandleUtility.GetHandleSize(pos), 0.5f) * size * handleScale;
+	}
 
 	void UpdateMesh() {
 		if (points.Length > 2 && spriteRenderer != null) {
@@ -514,7 +512,7 @@ public class SkinMesh : EditorWindow {
 			// Create the Vector3 vertices
 			// Vector3[] vertices = new Vector3[vertices2D.Length];
 			// for (int i=0; i<vertices.Length; i++) {
-				// vertices[i] = new Vector3(vertices2D[i].x, vertices2D[i].y, 0);
+			// vertices[i] = new Vector3(vertices2D[i].x, vertices2D[i].y, 0);
 			// }
 
 			// Create the mesh
@@ -540,7 +538,7 @@ public class SkinMesh : EditorWindow {
 		}
 	}
 
-	public Vector2[] genUV (Vector3[] vertices)
+	public Vector2[] genUV(Vector3[] vertices)
 	{
 		if (spriteRenderer != null)
 		{
@@ -551,7 +549,7 @@ public class SkinMesh : EditorWindow {
 			// Debug.Log(texWidth);
 
 			// Get the bottom left position of the sprite renderer bounds in local space
-			Vector3 botLeft = spriteRenderer.transform.InverseTransformPoint(new Vector3 (spriteRenderer.bounds.min.x, spriteRenderer.bounds.min.y, 0));
+			Vector3 botLeft = spriteRenderer.transform.InverseTransformPoint(new Vector3(spriteRenderer.bounds.min.x, spriteRenderer.bounds.min.y, 0));
 
 			// Get the sprite's texture origin from the sprite's rect as float values
 			Vector2 spriteTextureOrigin;
@@ -562,11 +560,11 @@ public class SkinMesh : EditorWindow {
 			for (int i = 0; i<vertices.Length; i++) {
 				// Apply the bottom left and lower left offset values to the vertices before applying the pixels to units 
 				// to get the pixel value
-				float x = (vertices [i].x - botLeft.x) * spriteRenderer.sprite.pixelsPerUnit;
-				float y = (vertices [i].y - botLeft.y) * spriteRenderer.sprite.pixelsPerUnit;
+				float x = (vertices[i].x - botLeft.x) * spriteRenderer.sprite.pixelsPerUnit;
+				float y = (vertices[i].y - botLeft.y) * spriteRenderer.sprite.pixelsPerUnit;
 
 				// Add the sprite's origin on the texture to the vertices and divide by the dimensions to get the UV
-				uv [i] = new Vector2 (((x + spriteTextureOrigin.x) / texWidth), ((y + spriteTextureOrigin.y) / texHeight));
+				uv[i] = new Vector2(((x + spriteTextureOrigin.x) / texWidth), ((y + spriteTextureOrigin.y) / texHeight));
 			}
 			return uv;
 		}
@@ -578,7 +576,7 @@ public class SkinMesh : EditorWindow {
 
 	void SaveMesh() {
 		if (mesh != null && spriteRenderer != null) {
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 			// Unparent the skin temporarily before adding the mesh
 			Transform polygonParent = spriteRenderer.transform.parent;
 			spriteRenderer.transform.parent = null;
@@ -604,7 +602,7 @@ public class SkinMesh : EditorWindow {
 			spriteRenderer.transform.localRotation = localRotation;
 			spriteRenderer.transform.localScale = localScale;
 			spriteRenderer.transform.parent = polygonParent;
-		#endif
+#endif
 		}
 	}
 
@@ -655,14 +653,14 @@ public class SkinMesh : EditorWindow {
 
 			//Add vertices
 			foreach (Vector2 point in points) {
-				geometry.AddPoint(point.x,point.y);
+				geometry.AddPoint(point.x, point.y);
 			}
 
 			int N = geometry.Count;
 			int end = 0;
 			//Add vertices
 			foreach (Vector2 point in points) {
-				geometry.AddPoint(point.x,point.y);
+				geometry.AddPoint(point.x, point.y);
 				end++;
 			}
 
@@ -683,7 +681,7 @@ public class SkinMesh : EditorWindow {
 				TriangleNet.Tools.Statistic stat = new TriangleNet.Tools.Statistic();
 				stat.Update(triangleMesh, 1);
 				// Refine by area
-				if (divisions > 2) triangleMesh.Refine (stat.LargestArea / 8);
+				if (divisions > 2) triangleMesh.Refine(stat.LargestArea / 8);
 
 				try {
 					triangleMesh.Smooth();
@@ -708,7 +706,7 @@ public class SkinMesh : EditorWindow {
 			}
 
 			//transform triangles
-			int[] triangles = new int[triangleMesh.Triangles.Count*3];
+			int[] triangles = new int[triangleMesh.Triangles.Count * 3];
 			n = 0;
 			foreach (TriangleNet.Data.Triangle t in triangleMesh.Triangles) {
 				triangles[n++] = t.P1;
@@ -732,7 +730,7 @@ public class SkinMesh : EditorWindow {
 
 			meshCreated = true;
 		}
-    }
+	}
 
 	public Mesh CreateMeshFromPoints(bool combine) {
         if (spriteRenderer != null && points.Length > 2) {
@@ -746,16 +744,16 @@ public class SkinMesh : EditorWindow {
 			TriangleNet.Geometry.InputGeometry geometry = new TriangleNet.Geometry.InputGeometry(pointNum);
 
 
-            geometry.AddPolygon(points);
+			geometry.AddPolygon(points);
 
 
 			if (combine && combineMesh != null) {
-                geometry.AddPolygon(combineMesh.vertices.Select(x => (Vector2)x).ToArray());
+				geometry.AddPolygon(combineMesh.vertices.Select(x => (Vector2)x).ToArray());
 			}
 
 			//Triangulate
 			TriangleNet.Mesh triangleMesh = new TriangleNet.Mesh();
-		   
+
 			triangleMesh.Triangulate(geometry);
 
 			//transform vertices
@@ -764,18 +762,18 @@ public class SkinMesh : EditorWindow {
 			Vector3[] normals = new Vector3[triangleMesh.Vertices.Count];
 
 			int n = 0;
-			foreach(TriangleNet.Data.Vertex v in triangleMesh.Vertices) 
+			foreach (TriangleNet.Data.Vertex v in triangleMesh.Vertices)
 			{
 
 				points[n] = new Vector2((float)v.X, (float)v.Y);
 				vertices[n] = new Vector3((float)v.X, (float)v.Y, 0);
-				normals[n]=new Vector3(0,0,-1);
+				normals[n] = new Vector3(0, 0, -1);
 
 				n++;
 			}
 
 			//transform triangles
-            int[] triangles = triangleMesh.Triangles.ToUnityMeshTriangleIndices();
+			int[] triangles = triangleMesh.Triangles.ToUnityMeshTriangleIndices();
 
 			mesh.Clear();
 			mesh = new Mesh();

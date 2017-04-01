@@ -154,7 +154,7 @@ public class Skin2DEditor : Editor {
 
 			for(int i = 0; i < skin.controlPoints.Length; i++) {
 				// if (Handles.Button(skin.points.GetPoint(skin.controlPoints[i]), Quaternion.identity, selectDistance, selectDistance, Handles.CircleCap)) {
-				if (Handles.Button(vertices[i], Quaternion.identity, selectDistance, selectDistance, Handles.CircleCap)) {
+				if (Handles.Button(vertices[i], Quaternion.identity, selectDistance, selectDistance, Handles.CircleHandleCap)) {
 					selectedIndex = i;
 				}
 				if (selectedIndex == i) {
